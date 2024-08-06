@@ -1,0 +1,2 @@
+# Ignore yolov3.weights file
+src/pros_yolo/pros_yolo/yolov3.weights

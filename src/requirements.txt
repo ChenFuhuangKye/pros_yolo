@@ -1,1 +1,2 @@
+ultralytics
 lapx>=0.5.2

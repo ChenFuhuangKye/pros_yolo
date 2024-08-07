@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [            
-            "image_yolo = pros_yolo.pros_yolo:main",
+            "soccer_node = pros_yolo.soccer:main",
         ],
     },
 )

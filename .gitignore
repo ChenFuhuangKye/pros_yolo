@@ -1,2 +1,6 @@
-# Ignore yolov3.weights file
-src/pros_yolo/pros_yolo/yolov3.weights
+# Ignore Python bytecode files
+**/__pycache__/
+**/*.py[cod]
+
+# Specific to your project structure
+src/pros_yolo/pros_yolo/__pycache__/*

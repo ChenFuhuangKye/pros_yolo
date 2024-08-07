@@ -1,5 +1,5 @@
 export IMG_NAME="pros_yolo"
-export ECR_URL="ocar1054"
+export ECR_URL="kyehuang"
 export TAG="0.0.0"
 export DOCKER_CLI_EXPERIMENTAL=enabled
 

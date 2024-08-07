@@ -2,6 +2,7 @@ import rclpy
 from rclpy.node import Node
 from cv_bridge import CvBridge
 from sensor_msgs.msg import CompressedImage
+from std_msgs.msg import String
 from ultralytics import YOLO
 import cv2
 import numpy as np
@@ -24,6 +25,11 @@ class pros_yolo(Node):
             CompressedImage,
             '/camera/image/yolo',
             10)
+        
+        self.bbox_publisher = self.create_publisher(
+            String,
+            '/camera/image/bbox',
+            10)
 
     def listener_callback(self, msg):
         self.get_logger().info('Received frame')
@@ -34,21 +40,38 @@ class pros_yolo(Node):
         # visualizing results
         annotated_frame = results[0].plot()
 
+        # publish bbox info
+        self.publish_bbox(results)
+
         # show the frame
         cv2.imshow("YOLOv8 Tracking", annotated_frame)
 
         # encode frame as CompressedImage and publish
-        msg_out = CompressedImage()
-        msg_out.header.stamp = self.get_clock().now().to_msg()
-        msg_out.format = "jpeg"
-        msg_out.data = np.array(cv2.imencode('.jpg', annotated_frame)[1]).tobytes()
-        self.publisher.publish(msg_out)
-
+        self.publish_image(annotated_frame)
+                
         # click 'q' to quit
         if cv2.waitKey(1) & 0xFF == ord('q'):
             cv2.destroyAllWindows()
             rclpy.shutdown()
 
+    def publish_bbox(self, results):
+        bbox_info = ""
+        for result in results[0].boxes:
+            bbox = result.xyxy[0].tolist()  
+            class_name = self.model.names[int(result.cls)]  
+            bbox_info += f"Class: {class_name}, BBox: {bbox}\n"
+                
+        bbox_msg = String()
+        bbox_msg.data = bbox_info
+        self.bbox_publisher.publish(bbox_msg)
+    
+    def publish_image(self, frame):
+        msg_out = CompressedImage()
+        msg_out.header.stamp = self.get_clock().now().to_msg()
+        msg_out.format = "jpeg"
+        msg_out.data = np.array(cv2.imencode('.jpg', frame)[1]).tobytes()
+        self.publisher.publish(msg_out)
+        
 def main():
     rclpy.init()
     node = pros_yolo()

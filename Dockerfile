@@ -6,4 +6,5 @@ COPY ./src /workspaces/src
 WORKDIR /workspaces
 
 RUN pip install --no-cache-dir -r /workspaces/src/requirements.txt
+RUN colcon build 
 CMD ["bash", "-l"]
